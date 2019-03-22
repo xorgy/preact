@@ -40,12 +40,13 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 	}
 
 	for (i=0; i<newChildren.length; i++) {
-		index = i;
+		index = i < oldChildrenLength ? i : null;
 		// TODO: Create copy if vnode is not already used
 		if (newChildren[i]!=null && newChildren[i].type===undefined) {
 			// childVNode = newChildren[i] = coerceToVNode(newChildren[i]);
 		}
 		childVNode = newChildren[i];
+		p = oldChildren[i];
 
 		// Check if we find a corresponding element in oldChildren and store the
 		// index where the element was found.
@@ -67,6 +68,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 			oldChildren[index] = null;
 		}
 
+		console.log(oldVNode && oldVNode._dom)
 		nextDom = childDom!=null && childDom.nextSibling;
 
 		// Morph the old element into the new one, but don't append it to the dom yet
@@ -92,7 +94,9 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 				// The values only have the same type when `null`.
 
 				outer: if (childDom==null || childDom.parentNode!==parentDom) {
-					parentDom.appendChild(newDom);
+					// if (newDom.parentNode==null){
+						parentDom.appendChild(newDom);
+					// }
 				}
 				else {
 					sibDom = childDom;
@@ -119,7 +123,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 	if (excessDomChildren!=null && newParentVNode.type!==Fragment) for (i=excessDomChildren.length; i--; ) if (excessDomChildren[i]!=null) removeNode(excessDomChildren[i]);
 
 	// Remove remaining oldChildren if there are any.
-	// for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) unmount(oldChildren[i], ancestorComponent);
+	for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) unmount(oldChildren[i], ancestorComponent);
 }
 
 /**

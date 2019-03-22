@@ -1,5 +1,7 @@
 import { createElement as h, Component, render } from '../../src/index';
 import { setupScratch, teardown } from '../_util/helpers';
+import { div, span } from '../_util/dom';
+import { setupRerender } from 'preact/test-utils';
 import { logCall, clearLog, getLog } from '../_util/logCall';
 
 /** @jsx h */
@@ -11,6 +13,9 @@ describe('keys', () => {
 
 	/** @type {string[]} */
 	let ops;
+
+	/** @type {() => void} */
+	let rerender;
 
 	function createStateful(name) {
 		return class Stateful extends Component {
@@ -57,6 +62,7 @@ describe('keys', () => {
 
 	beforeEach(() => {
 		scratch = setupScratch();
+		rerender = setupRerender();
 		ops = [];
 	});
 
@@ -491,5 +497,45 @@ describe('keys', () => {
 		expect(ops).to.deep.equal(['Unmount Stateful2', 'Unmount Stateful1', 'Mount Stateful2', 'Mount Stateful1']);
 		expect(Stateful1Ref).to.not.equal(Stateful1MovedRef);
 		expect(Stateful2Ref).to.not.equal(Stateful2MovedRef);
+	});
+
+	it.only('should', () => {
+		let updateState;
+		class Foo extends Component {
+			constructor() {
+				super();
+				this.state = { active: true };
+				updateState = () => this.setState(prev => ({ active: !prev.active }));
+			}
+			render() {
+				return (
+					<div>
+						<div>A</div>
+						{this.state.active && <span>B</span>}
+						<div>C</div>
+						{!this.state.active && <span>D</span>}
+					</div>
+				);
+			}
+		}
+
+		render(<Foo />, scratch);
+		console.log("---")
+		clearLog();
+
+		updateState();
+		rerender();
+		console.log("---")
+		expect(getLog()).to.deep.equal([
+			'<span>B.remove()',
+			'<div>ADC.appendChild(<span>D)'
+		]);
+		clearLog();
+
+		updateState();
+		rerender();
+		expect(getLog()).to.deep.equal([
+			'<div>ACB.appendChild(<div>C)'
+		]);
 	});
 });
