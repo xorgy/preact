@@ -40,25 +40,21 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 	}
 
 	for (i=0; i<newChildren.length; i++) {
-		childVNode = newChildren[i] = coerceToVNode(newChildren[i]);
-		oldVNode = index = null;
+		index = i;
+		// TODO: Create copy if vnode is not already used
+		if (newChildren[i]!=null && newChildren[i].type===undefined) {
+			// childVNode = newChildren[i] = coerceToVNode(newChildren[i]);
+		}
+		childVNode = newChildren[i];
 
 		// Check if we find a corresponding element in oldChildren and store the
 		// index where the element was found.
-		p = oldChildren[i];
-		if (childVNode!=null) {
-			if (p != null && (childVNode.key==null && p.key==null ? (childVNode.type === p.type) : (childVNode.key === p.key))) {
-				index = i;
-			}
-			else {
-				for (j=0; j<oldChildrenLength; j++) {
-					p = oldChildren[j];
-					if (p!=null) {
-						if (childVNode.key==null && p.key==null ? (childVNode.type === p.type) : (childVNode.key === p.key)) {
-							index = j;
-							break;
-						}
-					}
+		if (childVNode!=null && childVNode.key!=null && childVNode.key!=p.key) {
+			for (j=0; j<oldChildrenLength; j++) {
+				p = oldChildren[j];
+				if (p!=null && childVNode.key === p.key) {
+					index = j;
+					break;
 				}
 			}
 		}
@@ -67,7 +63,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 		// and delete it from the array. That way the next iteration can skip this
 		// element.
 		if (index!=null) {
-			oldVNode = oldChildren[index];
+			oldVNode = index < oldChildrenLength ? oldChildren[index] : null;
 			oldChildren[index] = null;
 		}
 
@@ -123,7 +119,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 	if (excessDomChildren!=null && newParentVNode.type!==Fragment) for (i=excessDomChildren.length; i--; ) if (excessDomChildren[i]!=null) removeNode(excessDomChildren[i]);
 
 	// Remove remaining oldChildren if there are any.
-	for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) unmount(oldChildren[i], ancestorComponent);
+	// for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) unmount(oldChildren[i], ancestorComponent);
 }
 
 /**
@@ -135,7 +131,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 export function toChildArray(children, flattened, map) {
 	if (flattened == null) flattened = [];
 	if (children==null || typeof children === 'boolean') flattened.push(null);
-	if (Array.isArray(children)) {
+	else if (Array.isArray(children)) {
 		for (let i=0; i < children.length; i++) {
 			toChildArray(children[i], flattened);
 		}
