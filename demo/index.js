@@ -18,7 +18,7 @@ let isBenchmark = /(\/spiral|\/pythagoras|[#&]bench)/g.test(window.location.href
 if (!isBenchmark) {
 	// eslint-disable-next-line no-console
 	console.log('Enabling devtools');
-	initDevTools();
+	// initDevTools();
 }
 
 class Home extends Component {
@@ -105,4 +105,42 @@ installLogger(
 	String(localStorage.CONSOLE)==='true' || location.href.match(/console/)
 );
 
-render(<App />, document.body);
+class X extends Component {
+  state = { i: 0 };
+
+  componentDidMount() {
+		console.log("Mount X")
+    this.id = setInterval(() => {
+      this.setState({ i: this.state.i + 1 });
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+		clearTimeout(this.id);
+		console.log("Unmount X", this.state.i)
+  }
+
+  render() {
+    return <div>{this.state.i}</div>;
+  }
+}
+class App2 extends Component {
+  state = { i: 0 };
+  componentDidMount() {
+    setInterval(() => {
+      this.setState({ i: this.state.i ^ 1 });
+    }, 3000);
+  }
+
+  render(props) {
+    return (
+      <span>
+        {this.state.i === 0 && <X />}
+        <X />
+      </span>
+    );
+  }
+}
+
+
+render(<App2 />, document.body);
