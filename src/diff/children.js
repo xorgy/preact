@@ -39,21 +39,34 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 		}
 	}
 
+	console.log("children", oldChildrenLength, newChildren.length, oldChildren.map(x => x==null?null : (x.type || x.text)), newChildren.map(x => x==null?null : (x.type || x.text)))
+
 	for (i=0; i<newChildren.length; i++) {
 		index = i < oldChildrenLength ? i : null;
 		// TODO: Create copy if vnode is not already used
-		if (newChildren[i]!=null && newChildren[i].type===undefined) {
-			// childVNode = newChildren[i] = coerceToVNode(newChildren[i]);
-		}
 		childVNode = newChildren[i];
+		if (childVNode!=null && typeof childVNode!='object') {
+			childVNode = newChildren[i] = coerceToVNode(childVNode);
+		}
 		p = oldChildren[i];
 
 		// Check if we find a corresponding element in oldChildren and store the
 		// index where the element was found.
-		if (childVNode!=null && childVNode.key!=null && childVNode.key!=p.key) {
+		if (childVNode!=null && (p==null || (childVNode.key!=null && childVNode.key!=p.key))) {
 			for (j=0; j<oldChildrenLength; j++) {
 				p = oldChildren[j];
 				if (p!=null && childVNode.key === p.key) {
+					index = j;
+					break;
+				}
+			}
+		}
+
+		// TODO: Golf this
+		if (childVNode!=null && p!=null && childVNode.type!==p.type) {
+			for (j=0; j<oldChildrenLength; j++) {
+				p = oldChildren[j];
+				if (p!=null && childVNode.type === p.type) {
 					index = j;
 					break;
 				}
@@ -68,7 +81,6 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 			oldChildren[index] = null;
 		}
 
-		console.log(oldVNode && oldVNode._dom)
 		nextDom = childDom!=null && childDom.nextSibling;
 
 		// Morph the old element into the new one, but don't append it to the dom yet
@@ -95,6 +107,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 
 				outer: if (childDom==null || childDom.parentNode!==parentDom) {
 					// if (newDom.parentNode==null){
+						console.log("--> append", newDom, parentDom)
 						parentDom.appendChild(newDom);
 					// }
 				}
@@ -106,6 +119,7 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 							break outer;
 						}
 					}
+					console.log("--> insert", newDom.outerHTML, "before", childDom)
 					parentDom.insertBefore(newDom, childDom);
 				}
 			}
@@ -123,7 +137,10 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
 	if (excessDomChildren!=null && newParentVNode.type!==Fragment) for (i=excessDomChildren.length; i--; ) if (excessDomChildren[i]!=null) removeNode(excessDomChildren[i]);
 
 	// Remove remaining oldChildren if there are any.
-	for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) unmount(oldChildren[i], ancestorComponent);
+	for (i=oldChildrenLength; i--; ) if (oldChildren[i]!=null) {
+		console.log("--> unmount OLD")
+		unmount(oldChildren[i], ancestorComponent);
+	}
 }
 
 /**
@@ -134,10 +151,11 @@ export function diffChildren(parentDom, newParentVNode, oldParentVNode, context,
  */
 export function toChildArray(children, flattened, map) {
 	if (flattened == null) flattened = [];
-	if (children==null || typeof children === 'boolean') flattened.push(null);
+	if (children===undefined) {}
+	else if (children==null || typeof children === 'boolean') flattened.push(null);
 	else if (Array.isArray(children)) {
 		for (let i=0; i < children.length; i++) {
-			toChildArray(children[i], flattened);
+			toChildArray(children[i], flattened, map);
 		}
 	}
 	else {

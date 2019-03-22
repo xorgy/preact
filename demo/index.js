@@ -1,4 +1,5 @@
 import { createElement, render, hydrate, Component, options, Fragment } from 'preact';
+import { useState, useEffect } from 'preact/hooks'
 // import renderToString from 'preact-render-to-string';
 import './style.scss';
 import { Router, Link } from './router';
@@ -143,4 +144,59 @@ class App2 extends Component {
 }
 
 
-render(<App2 />, document.body);
+
+const App3 = () => {
+  const [id, updateId] = useState(0)
+  const vnode = (
+    <div>
+      <button onClick={() => {
+				updateId(id => id + 1)
+				console.log("---")
+			}}>Increment</button>
+      <Main id={id} />
+    </div>
+	);
+	console.log("render", vnode)
+	return vnode;
+}
+
+const Main = props => {
+  return <DataViewer id={props.id} />
+}
+
+const DataViewer = props => {
+  const data = useData(props.id)
+	const t = new Date().getTime()
+	if (data === "LOADING") {
+		return (
+			<div>
+			loading({t}): {props.id}
+			</div>
+		)
+
+	}else {
+		return (
+			<h1>
+          loaded({t}): {props.id}
+        </h1>
+		)
+	}
+}
+
+const useData = id => {
+  const [data, updateData] = useState('LOADING')
+  useEffect(
+    () => {
+			updateData('LOADING')
+      setTimeout(() => {
+				console.log("--	")
+				updateData('LOADED')
+			}, 1000)
+    },
+    [id]
+  )
+  return data
+}
+
+
+render(<App3 />, document.body);

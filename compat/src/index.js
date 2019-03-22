@@ -99,6 +99,7 @@ let Children = {
 		return children ? toChildArray(children).length : 0;
 	},
 	only(children) {
+		console.log(children)
 		children = toChildArray(children);
 		if (children.length!==1) throw new Error('Children.only() expects only one child.');
 		return children[0];

@@ -62,6 +62,8 @@ Component.prototype.setState = function(update, callback) {
  * re-renderd
  */
 Component.prototype.forceUpdate = function(callback) {
+	// TODO: having both `_prevVNode` and `_vnode' seems redundant
+	console.log(this._vnode.type)
 	let vnode = this._vnode, dom = this._vnode._dom, parentDom = this._parentDom;
 	if (parentDom) {
 		// Set render mode so that we can differantiate where the render request
@@ -77,6 +79,7 @@ Component.prototype.forceUpdate = function(callback) {
 		commitRoot(mounts, vnode);
 	}
 	if (callback) callback();
+	this._prevVNode = vnode;
 };
 
 /**

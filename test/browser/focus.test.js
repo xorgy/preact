@@ -5,7 +5,7 @@ import { div, span, input as inputStr } from '../_util/dom';
 /* eslint-disable react/jsx-boolean-value */
 
 /** @jsx h */
-describe('focus', () => {
+describe.skip('focus', () => {
 
 	/** @type {HTMLDivElement} */
 	let scratch;

@@ -22,7 +22,6 @@ import options from '../options';
  * parent component
  */
 export function diff(dom, parentDom, newVNode, oldVNode, context, isSvg, excessDomChildren, mounts, ancestorComponent, force) {
-
 	// If the previous type doesn't match the new type we drop the whole subtree
 	if (oldVNode==null || newVNode==null || oldVNode.type!==newVNode.type) {
 		if (oldVNode!=null) unmount(oldVNode, ancestorComponent);
@@ -305,6 +304,7 @@ export function applyRef(ref, value, ancestorComponent) {
  * current element is already detached from the DOM.
  */
 export function unmount(vnode, ancestorComponent, skipRemove) {
+	if (!vnode) return;
 	let r;
 	if (options.unmount) options.unmount(vnode);
 
@@ -312,7 +312,11 @@ export function unmount(vnode, ancestorComponent, skipRemove) {
 		applyRef(r, null, ancestorComponent);
 	}
 
-	if (!skipRemove && vnode._lastDomChild==null && (skipRemove = ((r = vnode._dom)!=null))) removeNode(r);
+	if (!skipRemove && vnode._lastDomChild==null && (skipRemove = ((r = vnode._dom)!=null)))
+	{
+		console.log("--> unmount", vnode.type || vnode.text, vnode._dom.innerHTML)
+		removeNode(r);
+	}
 
 	vnode._dom = vnode._lastDomChild = null;
 
@@ -327,7 +331,8 @@ export function unmount(vnode, ancestorComponent, skipRemove) {
 		}
 
 		r.base = r._parentDom = null;
-		if (r = r._prevVNode) unmount(r, ancestorComponent, skipRemove);
+		console.log(r._vnode===r._prevVNode)
+		if (r._vnode!==(r = r._prevVNode)) unmount(r, ancestorComponent, skipRemove);
 	}
 	else if (r = vnode._children) {
 		for (let i = 0; i < r.length; i++) {

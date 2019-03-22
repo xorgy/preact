@@ -499,7 +499,7 @@ describe('keys', () => {
 		expect(Stateful2Ref).to.not.equal(Stateful2MovedRef);
 	});
 
-	it.only('should', () => {
+	it('should', () => {
 		let updateState;
 		class Foo extends Component {
 			constructor() {
@@ -520,7 +520,7 @@ describe('keys', () => {
 		}
 
 		render(<Foo />, scratch);
-		console.log("---")
+		console.log("\n\n")
 		clearLog();
 
 		updateState();

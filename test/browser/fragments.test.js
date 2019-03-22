@@ -725,7 +725,7 @@ describe('Fragment', () => {
 		expect(scratch.innerHTML).to.equal('foo');
 	});
 
-	it('should support conditionally rendered children', () => {
+	it.only('should support conditionally rendered children', () => {
 
 		/** @type {() => void} */
 		let update;
@@ -754,11 +754,13 @@ describe('Fragment', () => {
 		render(<Comp />, scratch);
 		expect(scratch.innerHTML).to.equal(html('foo'));
 
+		console.log('\n\n')
 		update();
 		rerender();
 
 		expect(scratch.innerHTML).to.equal(html(''));
 
+		console.log('\n\n')
 		update();
 		rerender();
 		expect(scratch.innerHTML).to.equal(html('foo'));

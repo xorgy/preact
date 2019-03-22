@@ -31,7 +31,7 @@ describe('props.children', () => {
 		render(<Foo />, scratch);
 
 		expect(children).to.be.an('array');
-		expect(children).to.have.lengthOf(0);
+		expect(children).to.have.lengthOf(1);
 		expect(scratch.innerHTML).to.equal('<div></div>');
 	});
 
@@ -39,7 +39,7 @@ describe('props.children', () => {
 		render(<Foo>{null}</Foo>, scratch);
 
 		expect(children).to.be.an('array');
-		expect(children).to.have.lengthOf(0);
+		expect(children).to.have.lengthOf(1);
 		expect(scratch.innerHTML).to.equal('<div></div>');
 	});
 
@@ -47,7 +47,7 @@ describe('props.children', () => {
 		render(<Foo>{false}</Foo>, scratch);
 
 		expect(children).to.be.an('array');
-		expect(children).to.have.lengthOf(0);
+		expect(children).to.have.lengthOf(1);
 		expect(scratch.innerHTML).to.equal('<div></div>');
 	});
 
@@ -55,7 +55,7 @@ describe('props.children', () => {
 		render(<Foo>{true}</Foo>, scratch);
 
 		expect(children).to.be.an('array');
-		expect(children).to.have.lengthOf(0);
+		expect(children).to.have.lengthOf(1);
 		expect(scratch.innerHTML).to.equal('<div></div>');
 	});
 
