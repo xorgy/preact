@@ -34,7 +34,7 @@ describe('Component spec', () => {
 			render(<WithDefaultProps fieldA={1} fieldB={2} fieldD={2} />, scratch);
 		});
 
-		it('should apply default props on rerender', () => {
+		it.only('should apply default props on rerender', () => {
 			let doRender;
 			class Outer extends Component {
 				constructor() {
@@ -48,6 +48,8 @@ describe('Component spec', () => {
 					return <WithDefaultProps fieldA={1} fieldB={i} fieldD={i} />;
 				}
 			}
+			console.log({foo:"bar"}, [1])
+			console.log("foo, bar")
 			class WithDefaultProps extends Component {
 				constructor(props, context) {
 					super(props, context);

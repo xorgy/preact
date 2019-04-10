@@ -60,7 +60,7 @@ module.exports = function(config) {
 
 		frameworks: ['source-map-support', 'mocha', 'chai-sinon'],
 
-		reporters: ['mocha'].concat(
+		reporters: ['mocha', 'fancy'].concat(
 			coverage ? 'coverage' : [],
 			sauceLabs ? 'saucelabs' : []
 		),
@@ -78,8 +78,8 @@ module.exports = function(config) {
 			showDiff: true
 		},
 
-		browserLogOptions: { terminal: true },
-		browserConsoleLogOptions: { terminal: true },
+		// browserLogOptions: { terminal: true },
+		// browserConsoleLogOptions: { terminal: true },
 
 		browserNoActivityTimeout: 5 * 60 * 1000,
 
