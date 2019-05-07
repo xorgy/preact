@@ -200,6 +200,7 @@ declare namespace preact {
 		diffed?(vnode: VNode): void;
 		event?(e: Event): void;
 		useDebugValue?(value: string | number): void;
+		debounceRendering?(process: () => void): void;
 	}
 
 	const options: Options;
