@@ -79,14 +79,18 @@ Suspense.prototype._childDidSuspend = function(promise) {
 		}
 	};
 
-	if (c.state._parkedChildren == null) {
-		c._fallback = c._fallback && cloneElement(c._fallback);
-		c.setState({ _parkedChildren: c._vnode._children });
-		detachDom(c._vnode._children);
-		c._vnode._children = [];
-	}
+	// TODO: Doesn't work cuz Suspense may not be rerendering when
+	// it catches a suspend
+	c._renderCallbacks.push(() => {
+		if (c.state._parkedChildren == null) {
+			c._fallback = c._fallback && cloneElement(c._fallback);
+			c.setState({ _parkedChildren: c._vnode._children });
+			detachDom(c._vnode._children);
+			c._vnode._children = [];
+		}
 
-	promise.then(onSuspensionComplete, onSuspensionComplete);
+		promise.then(onSuspensionComplete, onSuspensionComplete);
+	});
 };
 
 Suspense.prototype.render = function(props, state) {
