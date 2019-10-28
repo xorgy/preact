@@ -632,4 +632,25 @@ describe('Lifecycle methods', () => {
 			expect(scratch.textContent).to.equal('foo');
 		});
 	});
+
+	it('should correctly render when sCU component has null children', () => {
+		class App extends Component {
+			shouldComponentUpdate() {
+				return false;
+			}
+			render() {
+				return [
+					null,
+					<div>Hello World!</div>,
+					null
+				];
+			}
+		}
+
+		render(<App />, scratch);
+		expect(scratch.innerHTML).to.equal('<div>Hello World!</div>');
+
+		render(<App />, scratch);
+		expect(scratch.innerHTML).to.equal('<div>Hello World!</div>');
+	});
 });
