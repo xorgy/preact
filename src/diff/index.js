@@ -129,7 +129,7 @@ export function diff(parentDom, newVNode, oldVNode, context, isSvg, excessDomChi
 
 			tmp = c.render(c.props, c.state, c.context);
 			let isTopLevelFragment = tmp != null && tmp.type == Fragment && tmp.key == null;
-			newVNode._children = toChildArray(isTopLevelFragment ? tmp.props.children : tmp);
+			newVNode._children = isTopLevelFragment ? tmp.props.children : tmp;
 
 			if (c.getChildContext!=null) {
 				context = assign(assign({}, context), c.getChildContext());
