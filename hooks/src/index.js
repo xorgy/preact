@@ -46,10 +46,14 @@ options.diffed = vnode => {
 
 options._commit = (vnode, commitQueue) => {
 	commitQueue.some(vnode => {
-		vnode._renderCallbacks.forEach(invokeCleanup);
-		vnode._renderCallbacks = vnode._renderCallbacks.filter(cb =>
-			cb._value ? invokeEffect(cb) : true
-		);
+		vnode._renderCallbacks = vnode._renderCallbacks.map(cb => {
+			if (cb._value) {
+				invokeCleanup(cb);
+				return () => invokeEffect(cb);
+			}
+
+			return cb;
+		});
 	});
 
 	if (oldCommit) oldCommit(vnode, commitQueue);
