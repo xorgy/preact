@@ -1221,7 +1221,8 @@ describe('suspense', () => {
 	});
 
 	it('should render delayed lazy components through components using shouldComponentUpdate', () => {
-		const [Suspender, suspend] = createSuspender(() => <i>-1</i>);
+		const [Suspender1, suspend1] = createSuspender(() => <i>1</i>);
+		const [Suspender2, suspend2] = createSuspender(() => <i>2</i>);
 
 		class Blocker extends Component {
 			shouldComponentUpdate() {
@@ -1230,9 +1231,9 @@ describe('suspense', () => {
 			render(props) {
 				return (
 					<b>
-						<i>0</i>
+						<i>a</i>
 						{props.children}
-						<i>2</i>
+						<i>d</i>
 					</b>
 				);
 			}
@@ -1241,25 +1242,39 @@ describe('suspense', () => {
 		render(
 			<Suspense fallback={<div>Suspended...</div>}>
 				<Blocker>
-					<Suspender />
+					<Suspender1 />
+					<Suspender2 />
 				</Blocker>
 			</Suspense>,
 			scratch
 		);
-		expect(scratch.innerHTML).to.equal('<b><i>0</i><i>-1</i><i>2</i></b>');
+		expect(scratch.innerHTML).to.equal(
+			'<b><i>a</i><i>1</i><i>2</i><i>d</i></b>'
+		);
 
-		const [resolve] = suspend();
+		const [resolve1] = suspend1();
+		const [resolve2] = suspend2();
 		rerender();
 		expect(scratch.innerHTML).to.equal('<div>Suspended...</div>');
 
-		return resolve(() => <i>1</i>).then(() => {
-			rerender();
-			expect(scratch.innerHTML).to.equal('<b><i>0</i><i>1</i><i>2</i></b>');
-		});
+		return resolve1(() => <i>b</i>)
+			.then(() => {
+				rerender();
+				expect(scratch.innerHTML).to.equal('<div>Suspended...</div>');
+
+				return resolve2(() => <i>c</i>);
+			})
+			.then(() => {
+				rerender();
+				expect(scratch.innerHTML).to.equal(
+					'<b><i>a</i><i>b</i><i>c</i><i>d</i></b>'
+				);
+			});
 	});
 
 	it('should render initially lazy components through components using shouldComponentUpdate', () => {
-		const [Lazy, resolve] = createLazy();
+		const [Lazy1, resolve1] = createLazy();
+		const [Lazy2, resolve2] = createLazy();
 
 		class Blocker extends Component {
 			shouldComponentUpdate() {
@@ -1268,9 +1283,9 @@ describe('suspense', () => {
 			render(props) {
 				return (
 					<b>
-						<i>0</i>
+						<i>a</i>
 						{props.children}
-						<i>2</i>
+						<i>d</i>
 					</b>
 				);
 			}
@@ -1279,7 +1294,8 @@ describe('suspense', () => {
 		render(
 			<Suspense fallback={<div>Suspended...</div>}>
 				<Blocker>
-					<Lazy />
+					<Lazy1 />
+					<Lazy2 />
 				</Blocker>
 			</Suspense>,
 			scratch
@@ -1287,10 +1303,19 @@ describe('suspense', () => {
 		rerender();
 		expect(scratch.innerHTML).to.equal('<div>Suspended...</div>');
 
-		return resolve(() => <i>1</i>).then(() => {
-			rerender();
-			expect(scratch.innerHTML).to.equal('<b><i>0</i><i>1</i><i>2</i></b>');
-		});
+		return resolve1(() => <i>b</i>)
+			.then(() => {
+				rerender();
+				expect(scratch.innerHTML).to.equal('<div>Suspended...</div>');
+
+				return resolve2(() => <i>c</i>);
+			})
+			.then(() => {
+				rerender();
+				expect(scratch.innerHTML).to.equal(
+					'<b><i>a</i><i>b</i><i>c</i><i>d</i></b>'
+				);
+			});
 	});
 
 	it('should render initially lazy components through createContext', () => {
