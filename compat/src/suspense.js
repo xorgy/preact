@@ -58,10 +58,10 @@ Suspense.prototype._childDidSuspend = function(promise, suspender) {
 	};
 
 	const onSuspensionComplete = () => {
+		suspender.forceUpdate();
 		if (!--c._suspensions) {
 			c._vnode._children[0] = c.state._suspended;
 			c.setState({ _suspended: (c._detachOnNextRender = null) });
-			suspender.forceUpdate();
 		}
 	};
 
