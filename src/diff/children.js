@@ -123,11 +123,13 @@ export function diffChildren(
 						firstChildDom = newDom;
 					}
 
+					let nextDom = undefined;
 					if (childVNode._lastDomChild != null) {
-						// Only Fragments or components that return Fragment like VNodes will
+						// Only Fragments or components that return Fragment-like VNodes will
 						// have a non-null _lastDomChild. Continue the diff from the end of
 						// this Fragment's DOM tree.
 						newDom = childVNode._lastDomChild;
+						nextDom = childVNode._lastDomChild.nextSibling;
 
 						// Eagerly cleanup _lastDomChild. We don't need to persist the value because
 						// it is only used by `diffChildren` to determine where to resume the diff after
@@ -144,6 +146,7 @@ export function diffChildren(
 
 						outer: if (oldDom == null || oldDom.parentNode !== parentDom) {
 							parentDom.appendChild(newDom);
+							nextDom = null;
 						} else {
 							// `j<oldChildrenLength; j+=2` is an alternative to `j++<oldChildrenLength/2`
 							for (
@@ -156,6 +159,7 @@ export function diffChildren(
 								}
 							}
 							parentDom.insertBefore(newDom, oldDom);
+							nextDom = oldDom;
 						}
 
 						// Browsers will infer an option's `value` from `textContent` when
@@ -173,7 +177,11 @@ export function diffChildren(
 						}
 					}
 
-					oldDom = newDom.nextSibling;
+					if (nextDom === undefined) {
+						oldDom = newDom.nextSibling;
+					} else {
+						oldDom = nextDom;
+					}
 
 					if (typeof newParentVNode.type == 'function') {
 						// At this point, if childVNode._lastDomChild existed, then
