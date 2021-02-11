@@ -45,6 +45,12 @@ function setStyle(style, key, value) {
 	}
 }
 
+const non_property_events = {
+  compositionstart: 1,
+  compositionend: 1,
+  compositionupdate: 1,
+};
+
 /**
  * Set a property value on a DOM node
  * @param {import('../internal').PreactElement} dom The DOM node to modify
@@ -86,7 +92,8 @@ export function setProperty(dom, name, value, oldValue, isSvg) {
 		useCapture = name !== (name = name.replace(/Capture$/, ''));
 
 		// Infer correct casing for DOM built-in events:
-		if (name.toLowerCase() in dom) name = name.toLowerCase().slice(2);
+		if (name.toLowerCase() in dom || name.toLowerCase().slice(2) in non_property_events)
+			name = name.toLowerCase().slice(2);
 		else name = name.slice(2);
 
 		if (!dom._listeners) dom._listeners = {};
